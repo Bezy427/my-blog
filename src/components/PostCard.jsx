@@ -1,15 +1,29 @@
-export default function PostCard({ title, excerpt, date, image}) {
+import { Link } from "react-router-dom";
+import Posts from "../pages/Posts";
+
+export default function PostCard({ post }) {
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-            <img src={image} alt={title} className="w-full h-48 object-cover" />
-            <div className="p-6">
-                <p className="text-sm text-gray-500 mb-2">{date}</p>
-                <h2 className="text-xl text-blue-400 font-bold mb-2 hover:text-blue-600 cursor-pointer">{title}</h2>
-                <p className="text-gray-600">{excerpt}</p>
-                <button className="mt-4 text-purple-600 font-semibold hover:underline">
-                    Read More 'n 
-                </button>
+        <article className="rounded-xl border bg-white p-6 shadow-sm transition hover:shadow-md">
+            <h2 className="mb-2 text-xl font-bold text-gray-900">
+                {post.title}
+            </h2>
+
+            <p className="mb-4 text-gray-600">
+                {post.content}
+            </p>
+
+            <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">
+                    By {post.author}
+                </span>  
+
+                <Link 
+                    to={`/posts/${post.id}`}
+                    className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                >
+                    Read more
+                </Link>
             </div>
-        </div>
-    )
+        </article>
+    );
 }

@@ -1,22 +1,33 @@
 import { Link } from "react-router-dom";
-import Button from './Button';
 
 export default function Navbar() {
     return (
-        <nav className="bg-gray-200 shadow-md sticky top-0 z-50 cursor-pointer">
-            <div className="flex items-center justify-between gap-4 p-4">
-                <div>
-                    <Link to="/" className="text-2xl font-bold text-blue-600">MyBlog</Link>
-                </div>
-                <div>
-                    <Link  to="/create" className="text-blue-500"><Button>New Post</Button></Link>
-                    <Link  to="/about" className="text-blue-500"><Button>About</Button></Link>
-                    <Link  to="/contact" className="text-blue-500"><Button>Contact</Button></Link>
-                </div>
-                <div>
-                    <Link  to="/signup" className="justify-end text-blue-500"><Button>Get Started</Button></Link>
+        <nav className="border-b bg-white">
+            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+                { /* Logo*/ }
+                <Link to="/" className="text-xl font-bold text-gray-900">
+                    BezyBlog
+                </Link>
+                {/* Navigation */}
+                <div className="flex items-center gap-6">
+                    <Link to="/" className="text-sm font-medium text-gray-700 hover:text-black">
+                        Home
+                    </Link>
+
+                    <Link to="/posts" className="text-sm font-medium text-gray-700 hover:text-black">
+                        Posts
+                    </Link>
+                    
+                    <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-black">
+                        About
+                    </Link>
+                    
+                    <Link to="/login" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
+                        Login
+                    </Link>
+
                 </div>
             </div>
         </nav>
-    )
+    );
 }
