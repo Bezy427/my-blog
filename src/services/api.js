@@ -19,6 +19,9 @@ export async function request(endpoint, options= {}) {
     });
 
     if (!response.ok) {
+        if (response.status === 400) {
+            throw new Error("Invalid request.");
+        }
         if (response.status === 401) {
             throw new Error("You are not authenticated");
         }
@@ -27,7 +30,15 @@ export async function request(endpoint, options= {}) {
             throw new Error("You are not authorized to perform this action");
         }
 
-        throw new Error("Request failed!");
+        if (response.status === 404) {
+            throw new Error("The requested resource was not found!");
+        }
+
+        if (response.status >= 500) {
+            throw new Error("Server error. Please try again later!");
+        }
+
+        throw new Error("Something went wrong.");
     }
 
     // Some DELETE endpoints may return no body
@@ -37,6 +48,7 @@ export async function request(endpoint, options= {}) {
 
     return response.json();
 }
+
 
 export function getPosts() {
     return request("/posts");

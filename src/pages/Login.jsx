@@ -7,6 +7,7 @@ import {
     validateEmail,
     validatePassword,
 } from "../utils/validation";
+import Button from "../components/Button";
  
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -85,8 +86,8 @@ export default function Login() {
     }
 
     return (
-        <main className="flex min-h-[calc(100vh-73px)] items-center justify-center px-4">
-            <div className="w-full max-w-md rounded-xl border bg-white p-8 shadow-sm">
+        <main className="min-h-[70vh] px-4 py-8 sm:py-12">
+            <div className="mx-auto max-w-md rounded-xl border bg-white p-5 shadow-sm sm:p-8">
                 <h1 className="text-3xl font-bold">
                     Welcome back
                 </h1>
@@ -121,12 +122,12 @@ export default function Login() {
                             placeholder="you@gmail.com"
                             error={errors.email}
                         />
-
+{/* 
                         {errors.email && (
                             <p className="mt-2 text-sm text-red-600">
                                 {errors.email}
                             </p>
-                        )}
+                        )} */}
                     </div>
 
                     <div>
@@ -147,20 +148,20 @@ export default function Login() {
                             error={errors.password}
                         />
 
-                        {errors.password && (
+                        {/* {errors.password && (
                             <p className="mt-2 text-sm text-red-600">
                                 {errors.password}
                             </p>
-                        )}
+                        )} */}
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="mx-auto block w-fit rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >   
                         {loading ? "Sigining in ..." : "Sign in"}    
-                    </button>
+                    </Button>
                 </form>
 
                 <p className="mt-6 text-center text-sm text-gray-600">

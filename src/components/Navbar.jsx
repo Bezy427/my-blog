@@ -12,13 +12,13 @@ export default function Navbar() {
 
     return (
         <nav className="border-b bg-white">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+            <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:items-center sm:flex-row sm:justify-between px-4 py-4">
                 { /* Logo*/ }
                 <Link to="/" className="text-xl font-bold text-gray-900">
                     BezyBlog
                 </Link>
                 {/* Navigation */}
-                <div className="flex items-center gap-6">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6">
                     <Link to="/" className="text-sm font-medium text-gray-700 hover:text-black">
                         Home
                     </Link>

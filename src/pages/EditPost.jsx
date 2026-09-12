@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Textarea from "../components/Textarea";
+import Button from "../components/Button";
 
 export default function EditPost() {
     const {id} = useParams();
@@ -110,13 +111,13 @@ export default function EditPost() {
                     />
                 </div>
 
-                <button 
+                <Button 
                     type="submit"
                     disabled={saving}
                     className="rounded-lg bg-black px-6 py-3 font-medium text-white hover:bg-gray-800 disabled:opacity-50"
                 >
                     {saving ? "Saving..." : "Save Changes"}
-                </button>
+                </Button>
             </form>
         </main>
     );

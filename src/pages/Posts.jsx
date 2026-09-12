@@ -34,10 +34,10 @@ export default function Posts() {
     }
 
     return (
-        <main className="mx-auto max-w-4xl px-4 py-10">
-            <h1 className="mb-8 text-3xl font-bold">Latest Posts</h1>
+        <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+            <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Latest Posts</h1>
 
-            <div className="space-y-6">
+            <div className="mt-8 space-y-6">
                 {posts.map((post) => (
                     <PostCard key={post.id} post={post} />
                 ))}

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 export default function Dashboard() {
     const { user, logout } = useAuth();
@@ -22,9 +23,9 @@ export default function Dashboard() {
                     </p>            
                 </div>
 
-                <button className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100">
+                <Button className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100">
                     Logout
-                </button>
+                </Button>
             </div>
 
             <div className="mt-8">

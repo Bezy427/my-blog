@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import PostForm from "./PostForm";
 import { Textarea } from "@headlessui/react";
 import { Input } from "@headlessui/react";
+import Button from "../components/Button";
 // import { postsApi } from
 
 export default function CreatePost() {
@@ -34,66 +35,68 @@ export default function CreatePost() {
     }
 
     return (
-        <div className="mx-auto max-w-3xl px-4 py-10">
-            <h1 className="text-3xl font-bold">
-                Create Post
-            </h1>
+        <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+            <div className="rounded-xl border bg-white p-5 shadow:sm sm:p-8">
+                <h1 className="text-3xl font-bold text-gray-900 sm:text-3xl">
+                    Create Post
+                </h1>
 
-            {errors && (
-                <div className="mt-6 rounded-lg bg-red-50 p-4 text-red-600">
-                    {errors}
-                </div>
-            )}
+                {errors && (
+                    <div className="mt-6 rounded-lg bg-red-50 p-4 text-red-600">
+                        {errors}
+                    </div>
+                )}
 
-            <form 
-                onSubmit={handleSubmit} 
-                className="mt-8 space-y-6"
-            >
-                <div>
-                    <label 
-                        htmlFor="title"
-                        className="mb-2 block font-medium"
-                    >
-                        Title
-                    </label>
-
-                    <Input 
-                        id="title"
-                        value={title}
-                        onChange={(event) => setTitle(event.target.value)}
-                        required
-                        className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2"
-                        placeholder="Enter your post title"
-                    />    
-                </div>
-
-                <div>
-                    <label 
-                        htmlFor="content" 
-                        className="mb-2 block font-medium"
-                    >
-                        Content
-                    </label>
-
-                    <Textarea 
-                        id="content"
-                        value={content}
-                        onChange={(event) => setContent(event.target.value)}
-                        required
-                        rows={10}
-                        placeholder="Write your post..." 
-                        error={errors.content}
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="rounded-lg bg-black px-6 py-3 font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+                <form 
+                    onSubmit={handleSubmit} 
+                    className="mt-8 space-y-6"
                 >
-                    {loading ? "Publishing..." : "Publish Post"}
-                </button>
-            </form>
-        </div>
+                    <div>
+                        <label 
+                            htmlFor="title"
+                            className="mb-2 block font-medium"
+                        >
+                            Title
+                        </label>
+
+                        <Input 
+                            id="title"
+                            value={title}
+                            onChange={(event) => setTitle(event.target.value)}
+                            required
+                            className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2"
+                            placeholder="Enter your post title"
+                        />    
+                    </div>
+
+                    <div>
+                        <label 
+                            htmlFor="content" 
+                            className="mb-2 block font-medium"
+                        >
+                            Content
+                        </label>
+
+                        <Textarea 
+                            id="content"
+                            value={content}
+                            onChange={(event) => setContent(event.target.value)}
+                            required
+                            rows={10}
+                            placeholder="Write your post..." 
+                            error={errors.content}
+                        />
+                    </div>
+
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        className="rounded-lg bg-black px-6 py-3 font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+                    >
+                        {loading ? "Publishing..." : "Publish Post"}
+                    </Button>
+                </form>
+            </div>
+        </main>
     )
 }

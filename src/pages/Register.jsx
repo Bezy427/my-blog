@@ -6,6 +6,7 @@ import {
     validateEmail,
     validatePassword,
 } from "../utils/validation";
+import Button from "../components/Button";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -98,10 +99,10 @@ export default function Register() {
     }
 
     return (
-        <main className="flex min-h-[calc(100vh-73px)] items-center justify-center px-4 py-10">
-            <div className="w-full max-w-md rounded-xl border bg-white p-8 shadow-sm">
+        <main className="min-h-[70vh] px-4 py-8 sm:py-12">
+            <div className="mx-auto max-w-md rounded-xl border bg-white p-5 shadow-sm sm:p-8">
 
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-3xl items-center font-bold">
                     Create an account
                 </h1>
 
@@ -111,7 +112,7 @@ export default function Register() {
 
                 {apiError && (
                     <div className="mt-6 rounded-lg bg-red-50 p-4 text-sm text-red-600">
-                        {error}
+                        {errors}
                     </div>
                 )}
 
@@ -137,11 +138,11 @@ export default function Register() {
                             error={errors.username}
                         />
 
-                        {errors.username && (
+                        {/* {errors.username && (
                             <p className="mt-2 text-sm text-red-600">
                                 {errors.username}
                             </p>
-                        )}
+                        )} */}
                     </div>
 
                     <div>
@@ -163,12 +164,12 @@ export default function Register() {
                             placeholder="example@gmail.com"
                             error={errors.email}
                         />
-
+{/* 
                         {errors.email && (
                             <p className="mt-2 text-sm text-red-600">
                                 {errors.email}
                             </p>
-                        )}
+                        )} */}
                     </div>
                     
                     <div>
@@ -190,11 +191,11 @@ export default function Register() {
                             error={errors.password}
                         />
 
-                        {errors.password && (
+                        {/* {errors.password && (
                             <p className="mt-2 text-sm text-red-600">
                                 {errors.password}
                             </p>
-                        )}
+                        )} */}
                     </div>
 
                     <div>
@@ -211,34 +212,35 @@ export default function Register() {
                             type="password"
                             value={form.confirmPassword}
                             onChange={handleChange}
-                            placeholder="*********"
+                            placeholder="........."
                             error={errors.confirmPassword}
                         />
-
+{/* 
                         {errors.confirmPassword && (
                             <p className="mt-2 text-sm text-red-600">
                                 {errors.confirmPassword}
                             </p>
-                        )}
+                        )} */}
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="mx-auto block w-fit rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 
+                            disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {loading 
                             ? "Creating account..." 
                             : "Create account"
                         }
-                    </button>
+                    </Button>
                 </form>
 
-                <p className="mt-6 text-center text-sm text-gray-600">
+                <p className="flex justify-center mt-6 text-center text-sm text-gray-600">
                     Already have an account?{" "}
                     <Link
                         to="/login"
-                        className="font-medium text-black underline"
+                        className="font-medium items-center text-black underline"
                     >
                         Sign in
                     </Link>

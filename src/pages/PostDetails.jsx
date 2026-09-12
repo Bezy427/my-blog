@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
+import Button from "../components/Button";
 
 export default function PostDetails() {
     const { id } = useParams();
@@ -106,7 +107,7 @@ export default function PostDetails() {
     }
 
     return (
-        <main className="mx-auto max-w-3xl px-4 py-10">
+        <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
             <Link
                 to="/posts"
                 className="text-sm text-gray-500 hover:text-black"
@@ -114,8 +115,8 @@ export default function PostDetails() {
                 Back to posts
             </Link>
 
-            <article className="mt-8">
-                <h1 className="text-4xl font-bold">
+            <article className="rounded-cl border bg-white p-5">
+                <h1 className="text-4xl font-bold leading-tight text-gray-900 sm:text-4xl lg:text-5xl">
                     {post.title}
                 </h1>
 
@@ -123,13 +124,13 @@ export default function PostDetails() {
                     By {post.author}
                 </p>
 
-                <div className="mt-8 leading-8 text-gray-700">
+                <div className="mt-6 whitespace-pre-line text-base leading-8 text-gray-700 sm:text-lg">
                     {post.content}
                 </div>
             </article>
 
-            <section className="mt-16 border-t pt-10">
-                <h2 className="mb-8 text-2xl font-bold text-gray-900">
+            <section className="mt-12 border-t pt-8 sm:mt-16 sm:pt-10">
+                <h2 className="mb-6 text-2xl font-bold text-gray-900 sm:mb-8 sm:text-3xl">
                     Comments
                 </h2>
 
@@ -146,13 +147,13 @@ export default function PostDetails() {
                         Edit
                     </Link>
 
-                    <button
+                    <Button
                         onClick={handleDelete}
                         disabled={deleting}
                         className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {deleting ? "Deleting..." : "Delete"}
-                    </button>
+                    </Button>
                 </div>
             )}
         </main>
