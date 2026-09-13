@@ -1,9 +1,12 @@
+import EmptyState from "./EmptyState";
+
 export default function CommentList({ comments }) {
     if (comments.length === 0) {
         return (
-            <p className="text-gray-500">
-                No comments yet. Be the first to comment.
-            </p>
+            <EmptyState 
+                title="No comments yet."
+                message="Be the first to share your thoughts."
+            />
         );
     }
 

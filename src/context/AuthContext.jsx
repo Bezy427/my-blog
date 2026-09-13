@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getCurrentUser } from "../services/api";
+import { getCurrentUser, refreshAccessToken } from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -18,8 +18,23 @@ export function AuthProvider({ children }) {
                 return;
             }
 
+            
             try {
-                const currentUser = await getCurrentUser();
+                let currentUser;
+
+                try {
+                    currentUser = await getCurrentUser();
+                } catch(error) {
+                    if (error.status !== 401) {
+                        throw error;
+                    }
+
+                    const newToken = await refreshAccessToken();
+
+                    setToken(newToken);
+
+                    currentUser = await getCurrentUser();
+                }
                 setUser(currentUser);
             } catch (error) {
                 localStorage.removeItem("token");
@@ -31,7 +46,7 @@ export function AuthProvider({ children }) {
         }
 
         loadUser();
-    }, [token]);
+    }, []);
 
     function login(newToken) {
         localStorage.setItem("token", newToken);

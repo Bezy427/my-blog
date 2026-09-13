@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
 import Button from "../components/Button";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function PostDetails() {
     const { id } = useParams();
@@ -30,26 +31,21 @@ export default function PostDetails() {
         },
     ]);
 
-    useEffect(() => {
-        async function loadPost() {
-            try {
-                const response = await fetch(
-                    `http://localhost:8080/posts/${id}`
-                );
-
-                if (!response.ok) {
-                    throw new Error("Post not found!");
-                }
-
-                const data = await response.json();
-                setPost(data);
-            } catch(error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
+    async function loadPost() {
+        setLoading(true);
+        setError("");
+        
+        try {
+            const data = await response.json();
+            setPost(data);
+        } catch(error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
+    }
 
+    useEffect(() => {
         loadPost();
     }, [id]);
 
@@ -86,23 +82,17 @@ export default function PostDetails() {
     }
 
     if (loading) {
-        return <p className="p-8 text-center">Loading post...</p>
+        return <LoadingSpinner message="Loading post..." />;
     }
 
     if (error) {
         return (
-            <div className="p-8 text-center">
-                <p className="text-red-600">
-                    {error}
-                </p>
-
-                <Link 
-                    to="/posts"
-                    className="mt-4 inline-block underline"
-                >
-                        Back to posts
-                    </Link>
-            </div>
+            <main className="mx-auto max-w-4xl px-4 py-10">
+                <ErrorMessage
+                    message={error}
+                    onRetry={loadPost}
+                />
+            </main>
         );
     }
 

@@ -15,7 +15,7 @@ export default function Navbar() {
             <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:items-center sm:flex-row sm:justify-between px-4 py-4">
                 { /* Logo*/ }
                 <Link to="/" className="text-xl font-bold text-gray-900">
-                    BezyBlog
+                    TechBlog
                 </Link>
                 {/* Navigation */}
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6">
