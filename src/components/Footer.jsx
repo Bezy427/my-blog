@@ -10,7 +10,7 @@ export default function Footer() {
                             to="/"
                             className="text-lg font-bold text-gray-900 hover:text-blue-700"
                         >
-                            Blog API
+                            TechBlog API
                         </Link>
 
                         <p className="mt-1 text-sm text-gray-500">
@@ -43,7 +43,7 @@ export default function Footer() {
                 </div>
 
                 <div className="mt-6 border-t pt-6 text-center text-sm text-gray-500">
-                    © {new Date().getFullYear()} Blog API. All rights reserved.
+                    © {new Date().getFullYear()} TechBlog API. All rights reserved.
                 </div>
             </div>
         </footer>
