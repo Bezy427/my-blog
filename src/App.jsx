@@ -4,7 +4,9 @@ import { AuthProvider } from './context/AuthContext';
 import Posts from './pages/Posts';
 import EditPost from './pages/EditPost';
 import Navbar from './components/Navbar';
+import Footer from "./components/Footer";
 import Home from './pages/Home';
+import About from './pages/About';
 import PostDetails from './pages/PostDetails';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -15,39 +17,46 @@ function App() {
   return (
     <div>
       <AuthProvider>
-        <Navbar />
+        <div className="flex min-h-screen flex-col">
 
-        <Routes>
-          <Route path="/" element={<Home />}/>
-          <Route path="/posts" element={<Posts />}/>
-          <Route 
-            path="/posts/create"
-            element={
-              <ProtectedRoute>
-                <Posts />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/posts/:id" element={<PostDetails />}/>
-          <Route 
-            path="/posts/:id" 
-            element={
-              <ProtectedRoute>
-                <EditPost />      
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<Login />}/>
-          <Route path="/register" element={<Register />}/>
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                  <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+          <Navbar />
+
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />}/>
+              <Route path="/about" element={<About />}/>
+              <Route path="/posts" element={<Posts />}/>
+              <Route 
+                path="/posts/create"
+                element={
+                  <ProtectedRoute>
+                    <Posts />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/posts/:id" element={<PostDetails />}/>
+              <Route 
+                path="/posts/:id" 
+                element={
+                  <ProtectedRoute>
+                    <EditPost />      
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<Login />}/>
+              <Route path="/register" element={<Register />}/>
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                      <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </AuthProvider>
     </div> 
   )
