@@ -140,6 +140,7 @@ export default function Login() {
 
                         <Input 
                             id="password"
+                            name="password"
                             type="password"
                             value={form.password}
                             onChange={handleChange}

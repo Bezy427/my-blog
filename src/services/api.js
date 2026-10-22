@@ -143,11 +143,11 @@ export async function refreshAccessToken() {
 
 
 export function getPosts() {
-    return request("/posts");
+    return request("/api/posts");
 }
 
 export function getPost(id) {
-    return request(`/posts/${id}`);
+    return request(`/api/posts/${id}`);
 }
 
 export function login(credentials) {
@@ -158,7 +158,7 @@ export function login(credentials) {
 }
 
 export function signup(user) {
-    return request("/auth/signup", {
+    return request("/api/users", {
         method: "POST",
         body: JSON.stringify(user),
     });
@@ -169,21 +169,21 @@ export function getCurrentUser() {
 }
 
 export function createPost(post) {
-    return request("/posts", {
+    return request("/api/posts", {
         method: "POST",
         body: JSON.stringify(post),
     });
 }
 
 export function updatePost(id, post) {
-    return request(`/post/${id}`, {
+    return request(`/api/post/${id}`, {
         method: "PUT",
         body: JSON.stringify(post),
     });
 }
 
 export function deletePost(id) {
-    return request(`/posts/${id}`, {
+    return request(`/api/posts/${id}`, {
         method: "DELETE",
     });
 }
