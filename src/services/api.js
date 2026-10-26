@@ -1,3 +1,4 @@
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export class ApiError extends Error {
@@ -8,7 +9,7 @@ export class ApiError extends Error {
     }
 }
 
-export async function request(endpoint, options= {}) {
+export async function request(endpoint, options = {}, retry = true) {
     const token = localStorage.getItem("token");
 
     const headers = {
@@ -16,7 +17,6 @@ export async function request(endpoint, options= {}) {
         ...options.headers,
     };
 
-    // Add JWT when the user is logged in
     if (token) {
         headers.Authorization = `Bearer ${token}`;
     }
@@ -28,13 +28,15 @@ export async function request(endpoint, options= {}) {
             ...options,
             headers,
         });
-    } catch(error) {
+    } catch (error) {
         throw new ApiError(
-            message || "Unable to connect to the server. Please check that backend is running.",
-            response.status
+            "Unable to connect to the server. Please check that the backend is running.",
+            0
         );
     }
 
+
+    // Refresh the access token once after a 401 response.
     if (
         response.status === 401 &&
         retry &&
@@ -62,41 +64,44 @@ export async function request(endpoint, options= {}) {
     }
 
     if (!response.ok) {
-        let message;
-        
+        let message = null;
+
         try {
             const data = await response.json();
-            message = data.message;
+            message = data.message || data.error || null;
         } catch {
-            message = null;
+            // The server may return an empty or non-JSON response.
         }
 
         switch (response.status) {
             case 400:
-                throw new Error(message || "Invalid request.");
-            
+                throw new ApiError(
+                    message || "Invalid request.",
+                    response.status
+                );
+
             case 401:
                 throw new ApiError(
-                    message || "You are not authenticated",
-                    response.status,
+                    message || "You are not authenticated.",
+                    response.status
                 );
-        
+
             case 403:
                 throw new ApiError(
-                    message || "You are not authorized to perform this action",
-                    response.status,
+                    message || "You are not authorized to perform this action.",
+                    response.status
                 );
 
             case 404:
                 throw new ApiError(
-                    message ||"The requested resource was not found!",
-                    response.status,
+                    message || "The requested resource was not found.",
+                    response.status
                 );
 
             case 409:
                 throw new ApiError(
                     message || "A resource with these details already exists.",
-                    response.status,
+                    response.status
                 );
 
             default:
@@ -104,17 +109,22 @@ export async function request(endpoint, options= {}) {
                     throw new ApiError(
                         "Server error. Please try again later.",
                         response.status
-                    )
+                    );
                 }
-            throw new ApiError(
-                message || "Something went wrong.",
-                response.status
-            );
+
+                throw new ApiError(
+                    message || "Something went wrong.",
+                    response.status
+                );
         }
     }
 
-    // Some DELETE endpoints may return no body
     if (response.status === 204) {
+        return null;
+    }
+
+    // Handle successful responses that contain no body.
+    if (response.headers.get("content-length") === "0") {
         return null;
     }
 
@@ -122,10 +132,19 @@ export async function request(endpoint, options= {}) {
 }
 
 export async function refreshAccessToken() {
-    const response = await fetch(`${API_URL}/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-    });
+    let response;
+
+    try {
+        response = await fetch(`${API_URL}/auth/refresh`, {
+            method: "POST",
+            credentials: "include",
+        });
+    } catch {
+        throw new ApiError(
+            "Unable to refresh your session. Check your connection.",
+            0
+        );
+    }
 
     if (!response.ok) {
         throw new ApiError(
@@ -136,11 +155,17 @@ export async function refreshAccessToken() {
 
     const data = await response.json();
 
+    if (!data.token) {
+        throw new ApiError(
+            "The server did not return an access token.",
+            response.status
+        );
+    }
+
     localStorage.setItem("token", data.token);
 
     return data.token;
 }
-
 
 export function getPosts() {
     return request("/api/posts");
@@ -151,7 +176,7 @@ export function getPost(id) {
 }
 
 export function login(credentials) {
-    return request("auth/login", {
+    return request("/auth/login", {
         method: "POST",
         body: JSON.stringify(credentials),
     });
@@ -176,7 +201,7 @@ export function createPost(post) {
 }
 
 export function updatePost(id, post) {
-    return request(`/api/post/${id}`, {
+    return request(`/api/posts/${id}`, {
         method: "PUT",
         body: JSON.stringify(post),
     });

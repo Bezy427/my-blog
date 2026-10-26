@@ -18,8 +18,11 @@ export default function Posts() {
         try {
             const data = await getPosts();
             setPosts(data);
-        } catch(error) {
-            setError(error.message);
+        } catch (error) {
+            setError(error instanceof Error
+                ? error.message
+                : "Failed to load posts."
+            );
         } finally {
             setLoading(false);
         }

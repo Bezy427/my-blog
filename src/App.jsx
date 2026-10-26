@@ -22,38 +22,46 @@ function App() {
           <Navbar />
 
           <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />}/>
-              <Route path="/about" element={<About />}/>
-              <Route path="/posts" element={<Posts />}/>
-              <Route 
-                path="/posts/create"
-                element={
-                  <ProtectedRoute>
-                    <Posts />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/posts/:id" element={<PostDetails />}/>
-              <Route 
-                path="/posts/:id" 
-                element={
-                  <ProtectedRoute>
-                    <EditPost />      
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/login" element={<Login />}/>
-              <Route path="/register" element={<Register />}/>
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                      <Dashboard />
-                  </ProtectedRoute> 
-                }
-              />
-            </Routes>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/posts" element={<Posts />} />
+
+            {/* Create a post */}
+            <Route
+              path="/posts/create"
+              element={
+                <ProtectedRoute>
+                  <EditPost />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* View a post */}
+            <Route path="/posts/:id" element={<PostDetails />} />
+
+            {/* Edit a post */}
+            <Route
+              path="/posts/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditPost />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
           </main>
           <Footer />
         </div>
