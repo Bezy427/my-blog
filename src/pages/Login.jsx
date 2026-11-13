@@ -149,11 +149,11 @@ export default function Login() {
                             error={errors.password}
                         />
 
-                        {/* {errors.password && (
+                        {errors.password && (
                             <p className="mt-2 text-sm text-red-600">
                                 {errors.password}
                             </p>
-                        )} */}
+                        )}
                     </div>
 
                     <Button
