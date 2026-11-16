@@ -17,9 +17,18 @@ export async function request(endpoint, options = {}, retry = true) {
         ...options.headers,
     };
 
-    if (token) {
-        headers.Authorization = `Bearer ${token}`;
-    }
+    // Do not attach an existing token to public authentication requests.
+    const publicEndpoints = [
+    "/auth/login",
+    "/auth/refresh",
+    "/api/users",
+];
+
+const isPublicEndpoint = publicEndpoints.includes(endpoint);
+
+if (token && !isPublicEndpoint) {
+    headers.Authorization = `Bearer ${token}`;
+}
 
     let response;
 
@@ -28,20 +37,18 @@ export async function request(endpoint, options = {}, retry = true) {
             ...options,
             headers,
         });
-    } catch (error) {
+    } catch {
         throw new ApiError(
             "Unable to connect to the server. Please check that the backend is running.",
             0
         );
     }
 
-
     // Refresh the access token once after a 401 response.
     if (
         response.status === 401 &&
         retry &&
-        endpoint !== "/auth/login" &&
-        endpoint !== "/auth/refresh"
+        !isAuthEndpoint
     ) {
         try {
             const newToken = await refreshAccessToken();
@@ -64,13 +71,30 @@ export async function request(endpoint, options = {}, retry = true) {
     }
 
     if (!response.ok) {
+        const responseText = await response.text();
+
+        console.error(
+            `API error ${response.status} at ${endpoint}:`,
+            responseText
+        );
+
         let message = null;
 
         try {
-            const data = await response.json();
-            message = data.message || data.error || null;
+            const data = JSON.parse(responseText);
+
+            message =
+                data.message ||
+                data.detail ||
+                data.error ||
+                data.title ||
+                (data.errors
+                    ? JSON.stringify(data.errors)
+                    : null);
         } catch {
-            // The server may return an empty or non-JSON response.
+            if (responseText) {
+                message = responseText;
+            }
         }
 
         switch (response.status) {
@@ -107,7 +131,7 @@ export async function request(endpoint, options = {}, retry = true) {
             default:
                 if (response.status >= 500) {
                     throw new ApiError(
-                        "Server error. Please try again later.",
+                        message || "Server error. Please try again later.",
                         response.status
                     );
                 }
@@ -119,16 +143,24 @@ export async function request(endpoint, options = {}, retry = true) {
         }
     }
 
-    if (response.status === 204) {
+    if (
+        response.status === 204 ||
+        response.headers.get("content-length") === "0"
+    ) {
         return null;
     }
 
-    // Handle successful responses that contain no body.
-    if (response.headers.get("content-length") === "0") {
+    const responseText = await response.text();
+
+    if (!responseText) {
         return null;
     }
 
-    return response.json();
+    try {
+        return JSON.parse(responseText);
+    } catch {
+        return responseText;
+    }
 }
 
 export async function refreshAccessToken() {
@@ -178,6 +210,7 @@ export function getPost(id) {
 export function login(credentials) {
     return request("/auth/login", {
         method: "POST",
+        credentials: "include",
         body: JSON.stringify(credentials),
     });
 }

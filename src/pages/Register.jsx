@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signup } from "../services/api";
@@ -19,18 +20,18 @@ export default function Register() {
     });
 
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState("");
+    const [errors, setErrors] = useState({});
     const [apiError, setApiError] = useState("");
 
     function handleChange(event) {
         const { name, value } = event.target;
 
-        setForm((previous) => ({
+        setForm(previous => ({
             ...previous,
             [name]: value,
         }));
 
-        setErrors((previous) => ({
+        setErrors(previous => ({
             ...previous,
             [name]: "",
         }));
@@ -48,18 +49,19 @@ export default function Register() {
         if (!form.email.trim()) {
             newErrors.email = "Email is required!";
         } else if (!validateEmail(form.email)) {
-            newErrors.email = "Enter a valid email address."
+            newErrors.email = "Enter a valid email address.";
         }
 
         if (!form.password) {
-            newErrors.password = "Password is reqiured!";
+            newErrors.password = "Password is required!";
         } else if (!validatePassword(form.password)) {
-            newErrors.password = 
+            newErrors.password =
                 "Password must be at least 6 characters.";
         }
 
-        if (!confirmPassword) {
-            newErrors.confirmPassword = "Please confirm your password.";
+        if (!form.confirmPassword) {
+            newErrors.confirmPassword =
+                "Please confirm your password.";
         } else if (form.password !== form.confirmPassword) {
             newErrors.confirmPassword = "Passwords do not match.";
         }
@@ -82,27 +84,28 @@ export default function Register() {
 
         try {
             const signupData = {
-                username: form.username,
-                email: form.email,
+                username: form.username.trim(),
+                email: form.email.trim(),
                 password: form.password,
             };
 
             await signup(signupData);
 
             navigate("/login");
+
         } catch (error) {
-            setApiError(error.message);
+            console.error("Registration error:", error);
+            setApiError(error.message || "Registration failed.");
         } finally {
             setLoading(false);
         }
-
     }
 
     return (
         <main className="min-h-[70vh] px-4 py-8 sm:py-12">
             <div className="mx-auto max-w-md rounded-xl border bg-white p-5 shadow-sm sm:p-8">
 
-                <h1 className="text-3xl items-center font-bold">
+                <h1 className="text-3xl font-bold">
                     Create an account
                 </h1>
 
@@ -112,23 +115,21 @@ export default function Register() {
 
                 {apiError && (
                     <div className="mt-6 rounded-lg bg-red-50 p-4 text-sm text-red-600">
-                        {errors}
+                        {apiError}
                     </div>
                 )}
 
-                <form 
+                <form
                     onSubmit={handleSubmit}
                     className="mt-6 space-y-5"
                 >
                     <div>
-                        <label 
-                            htmlFor="username" 
-                            className="mb-2 block text-sm font-medium"
-                        >
+                        <label htmlFor="username"
+                            className="mb-2 block text-sm font-medium">
                             Username
                         </label>
 
-                        <Input 
+                        <Input
                             id="username"
                             name="username"
                             value={form.username}
@@ -137,50 +138,33 @@ export default function Register() {
                             placeholder="Tinotenda"
                             error={errors.username}
                         />
-
-                        {/* {errors.username && (
-                            <p className="mt-2 text-sm text-red-600">
-                                {errors.username}
-                            </p>
-                        )} */}
                     </div>
 
                     <div>
-                        <label 
-                            htmlFor="email"
-                            className="mb-2 block text-sm font-medium"
-                        >
+                        <label htmlFor="email"
+                            className="mb-2 block text-sm font-medium">
                             Email
                         </label>
 
-                        <Input 
+                        <Input
                             id="email"
                             name="email"
                             type="email"
                             value={form.email}
                             onChange={handleChange}
-                            aria-invalid={Boolean(errors.email)}
                             required
                             placeholder="example@gmail.com"
                             error={errors.email}
                         />
-{/* 
-                        {errors.email && (
-                            <p className="mt-2 text-sm text-red-600">
-                                {errors.email}
-                            </p>
-                        )} */}
                     </div>
-                    
+
                     <div>
-                        <label 
-                            htmlFor="password"
-                            className="mb-2 block text-sm font-medium"
-                        >
+                        <label htmlFor="password"
+                            className="mb-2 block text-sm font-medium">
                             Password
                         </label>
 
-                        <Input 
+                        <Input
                             id="password"
                             name="password"
                             type="password"
@@ -190,62 +174,48 @@ export default function Register() {
                             placeholder="*********"
                             error={errors.password}
                         />
-
-                        {/* {errors.password && (
-                            <p className="mt-2 text-sm text-red-600">
-                                {errors.password}
-                            </p>
-                        )} */}
                     </div>
 
                     <div>
-                        <label 
-                            htmlFor="confirmPassword" 
-                            className="mb-2 block text-sm font-medium"
-                        >
+                        <label htmlFor="confirmPassword"
+                            className="mb-2 block text-sm font-medium">
                             Confirm Password
                         </label>
 
-                        <Input 
+                        <Input
                             id="confirmPassword"
                             name="confirmPassword"
                             type="password"
                             value={form.confirmPassword}
                             onChange={handleChange}
-                            placeholder="........."
+                            required
+                            placeholder="*********"
                             error={errors.confirmPassword}
                         />
-{/* 
-                        {errors.confirmPassword && (
-                            <p className="mt-2 text-sm text-red-600">
-                                {errors.confirmPassword}
-                            </p>
-                        )} */}
                     </div>
 
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="mx-auto block w-fit rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 
-                            disabled:cursor-not-allowed disabled:opacity-50"
+                        className="mx-auto block w-fit rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        {loading 
-                            ? "Creating account..." 
+                        {loading
+                            ? "Creating account..."
                             : "Create account"
                         }
                     </Button>
                 </form>
 
-                <p className="flex justify-center mt-6 text-center text-sm text-gray-600">
+                <p className="mt-6 flex justify-center text-center text-sm text-gray-600">
                     Already have an account?{" "}
                     <Link
                         to="/login"
-                        className="font-medium items-center text-black underline"
+                        className="font-medium text-black underline"
                     >
                         Sign in
                     </Link>
                 </p>
             </div>
         </main>
-    )
+    );
 }
