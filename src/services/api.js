@@ -1,15 +1,77 @@
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export class ApiError extends Error {
-    constructor(message, status) {
+    constructor(message, status, data = null) {
         super(message);
         this.name = "ApiError";
         this.status = status;
+        this.data = data;
     }
 }
 
+const AUTH_ENDPOINTS = [
+    "/auth/login",
+    "/auth/refresh",
+    "/auth/logout",
+];
+
+const PUBLIC_ENDPOINTS = [
+    ...AUTH_ENDPOINTS,
+    "/api/users",
+];
+
+function isPublicEndpoint(endpoint) {
+    return PUBLIC_ENDPOINTS.includes(endpoint);
+}
+
+async function parseResponse(response) {
+    const contentType = response.headers.get("content-type");
+
+    if (contentType?.includes("application/json")) {
+        return response.json();
+    }
+
+    const text = await response.text();
+    return text || null;
+}
+
+async function refreshAccessToken() {
+    const response = await fetch(`${API_URL}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        localStorage.removeItem("token");
+
+        throw new ApiError(
+            "Your session has expired. Please log in again.",
+            response.status
+        );
+    }
+
+    const data = await parseResponse(response);
+
+    if (!data?.accessToken) {
+        throw new ApiError(
+            "Invalid refresh response from server.",
+            response.status,
+            data
+        );
+    }
+
+    localStorage.setItem("token", data.accessToken);
+
+    return data.accessToken;
+}
+
 export async function request(endpoint, options = {}, retry = true) {
+    const publicEndpoint = isPublicEndpoint(endpoint);
+
     const token = localStorage.getItem("token");
 
     const headers = {
@@ -17,38 +79,22 @@ export async function request(endpoint, options = {}, retry = true) {
         ...options.headers,
     };
 
-    // Do not attach an existing token to public authentication requests.
-    const publicEndpoints = [
-    "/auth/login",
-    "/auth/refresh",
-    "/api/users",
-];
-
-const isPublicEndpoint = publicEndpoints.includes(endpoint);
-
-if (token && !isPublicEndpoint) {
-    headers.Authorization = `Bearer ${token}`;
-}
-
-    let response;
-
-    try {
-        response = await fetch(`${API_URL}${endpoint}`, {
-            ...options,
-            headers,
-        });
-    } catch {
-        throw new ApiError(
-            "Unable to connect to the server. Please check that the backend is running.",
-            0
-        );
+    if (!publicEndpoint && token) {
+        headers.Authorization = `Bearer ${token}`;
+    } else {
+        delete headers.Authorization;
     }
 
-    // Refresh the access token once after a 401 response.
+    const response = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        headers,
+        credentials: "include",
+    });
+
     if (
         response.status === 401 &&
         retry &&
-        !isAuthEndpoint
+        !publicEndpoint
     ) {
         try {
             const newToken = await refreshAccessToken();
@@ -70,147 +116,27 @@ if (token && !isPublicEndpoint) {
         }
     }
 
-    if (!response.ok) {
-        const responseText = await response.text();
-
-        console.error(
-            `API error ${response.status} at ${endpoint}:`,
-            responseText
-        );
-
-        let message = null;
-
-        try {
-            const data = JSON.parse(responseText);
-
-            message =
-                data.message ||
-                data.detail ||
-                data.error ||
-                data.title ||
-                (data.errors
-                    ? JSON.stringify(data.errors)
-                    : null);
-        } catch {
-            if (responseText) {
-                message = responseText;
-            }
-        }
-
-        switch (response.status) {
-            case 400:
-                throw new ApiError(
-                    message || "Invalid request.",
-                    response.status
-                );
-
-            case 401:
-                throw new ApiError(
-                    message || "You are not authenticated.",
-                    response.status
-                );
-
-            case 403:
-                throw new ApiError(
-                    message || "You are not authorized to perform this action.",
-                    response.status
-                );
-
-            case 404:
-                throw new ApiError(
-                    message || "The requested resource was not found.",
-                    response.status
-                );
-
-            case 409:
-                throw new ApiError(
-                    message || "A resource with these details already exists.",
-                    response.status
-                );
-
-            default:
-                if (response.status >= 500) {
-                    throw new ApiError(
-                        message || "Server error. Please try again later.",
-                        response.status
-                    );
-                }
-
-                throw new ApiError(
-                    message || "Something went wrong.",
-                    response.status
-                );
-        }
-    }
-
-    if (
-        response.status === 204 ||
-        response.headers.get("content-length") === "0"
-    ) {
-        return null;
-    }
-
-    const responseText = await response.text();
-
-    if (!responseText) {
-        return null;
-    }
-
-    try {
-        return JSON.parse(responseText);
-    } catch {
-        return responseText;
-    }
-}
-
-export async function refreshAccessToken() {
-    let response;
-
-    try {
-        response = await fetch(`${API_URL}/auth/refresh`, {
-            method: "POST",
-            credentials: "include",
-        });
-    } catch {
-        throw new ApiError(
-            "Unable to refresh your session. Check your connection.",
-            0
-        );
-    }
+    const data = await parseResponse(response);
 
     if (!response.ok) {
-        throw new ApiError(
-            "Your session has expired. Please log in again.",
-            response.status
-        );
+        const message =
+            typeof data === "string"
+                ? data
+                : data?.message ||
+                  data?.error ||
+                  `Request failed with status ${response.status}`;
+
+        throw new ApiError(message, response.status, data);
     }
 
-    const data = await response.json();
-
-    if (!data.token) {
-        throw new ApiError(
-            "The server did not return an access token.",
-            response.status
-        );
-    }
-
-    localStorage.setItem("token", data.token);
-
-    return data.token;
+    return data;
 }
 
-export function getPosts() {
-    return request("/api/posts");
-}
-
-export function getPost(id) {
-    return request(`/api/posts/${id}`);
-}
+// Authentication API
 
 export function login(credentials) {
     return request("/auth/login", {
         method: "POST",
-        credentials: "include",
         body: JSON.stringify(credentials),
     });
 }
@@ -222,8 +148,24 @@ export function signup(user) {
     });
 }
 
+export function logout() {
+    return request("/auth/logout", {
+        method: "POST",
+    });
+}
+
 export function getCurrentUser() {
     return request("/auth/me");
+}
+
+// Posts API
+
+export function getPosts() {
+    return request("/api/posts");
+}
+
+export function getPost(id) {
+    return request(`/api/posts/${id}`);
 }
 
 export function createPost(post) {

@@ -1,29 +1,27 @@
+
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Input from "../components/Input";
+import Button from "../components/Button";
 import { login as loginUser } from "../services/api";
 import {
     validateEmail,
     validatePassword,
 } from "../utils/validation";
-import Button from "../components/Button";
- 
+
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    
     const [form, setForm] = useState({
         email: "",
         password: "",
     });
 
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState("");
+    const [errors, setErrors] = useState({});
     const [apiError, setApiError] = useState("");
-    const navigate = useNavigate();
 
-    const { login } = useAuth();
+    const navigate = useNavigate();
+    const { setIsAuthenticated } = useAuth();
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -53,7 +51,7 @@ export default function Login() {
         if (!form.password) {
             newErrors.password = "Password is required!";
         } else if (!validatePassword(form.password)) {
-            newErrors.password = 
+            newErrors.password =
                 "Password must be at least 6 characters.";
         }
 
@@ -65,9 +63,7 @@ export default function Login() {
     async function handleSubmit(event) {
         event.preventDefault();
 
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         setLoading(true);
         setApiError("");
@@ -75,11 +71,18 @@ export default function Login() {
         try {
             const data = await loginUser(form);
 
-            login(data.token);
+            if (!data?.accessToken) {
+                throw new Error(
+                    "The server did not return an access token."
+                );
+            }
+
+            localStorage.setItem("token", data.accessToken);
+            setIsAuthenticated(true);
 
             navigate("/dashboard");
         } catch (error) {
-            setApiError(error.message);
+            setApiError(error.message || "Unable to sign in.");
         } finally {
             setLoading(false);
         }
@@ -97,14 +100,17 @@ export default function Login() {
                 </p>
 
                 {apiError && (
-                    <div className="mt-6 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                    <div
+                        role="alert"
+                        className="mt-6 rounded-lg bg-red-50 p-3 text-sm text-red-600"
+                    >
                         {apiError}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="mt-6 space-y-5">
                     <div>
-                        <label 
+                        <label
                             htmlFor="email"
                             className="mb-2 block text-sm font-medium"
                         >
@@ -112,7 +118,7 @@ export default function Login() {
                         </label>
 
                         <Input
-                            id="email" 
+                            id="email"
                             name="email"
                             type="email"
                             value={form.email}
@@ -122,46 +128,35 @@ export default function Login() {
                             placeholder="you@gmail.com"
                             error={errors.email}
                         />
-{/* 
-                        {errors.email && (
-                            <p className="mt-2 text-sm text-red-600">
-                                {errors.email}
-                            </p>
-                        )} */}
                     </div>
 
                     <div>
-                        <label 
+                        <label
                             htmlFor="password"
                             className="mb-2 block text-sm font-medium"
                         >
                             Password
                         </label>
 
-                        <Input 
+                        <Input
                             id="password"
                             name="password"
                             type="password"
                             value={form.password}
                             onChange={handleChange}
+                            aria-invalid={Boolean(errors.password)}
                             required
-                            placeholder="........"
+                            placeholder="Enter your password"
                             error={errors.password}
                         />
-
-                        {errors.password && (
-                            <p className="mt-2 text-sm text-red-600">
-                                {errors.password}
-                            </p>
-                        )}
                     </div>
 
                     <Button
                         type="submit"
                         disabled={loading}
                         className="mx-auto block w-fit rounded-lg bg-black px-4 py-3 font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-                    >   
-                        {loading ? "Sigining in ..." : "Sign in"}    
+                    >
+                        {loading ? "Signing in..." : "Sign in"}
                     </Button>
                 </form>
 
@@ -176,5 +171,5 @@ export default function Login() {
                 </p>
             </div>
         </main>
-    )
+    );
 }

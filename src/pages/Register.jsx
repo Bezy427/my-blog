@@ -87,7 +87,10 @@ export default function Register() {
                 username: form.username.trim(),
                 email: form.email.trim(),
                 password: form.password,
+                confirmPassword: form.confirmPassword,
             };
+
+            console.log("Registration payload:", signupData);
 
             await signup(signupData);
 
