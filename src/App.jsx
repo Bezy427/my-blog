@@ -27,20 +27,17 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/posts" element={<Posts />} />
 
-            {/* Create a post */}
             <Route
               path="/posts/create"
               element={
                 <ProtectedRoute>
-                  <EditPost />
+                  <CreatePost />
                 </ProtectedRoute>
               }
             />
 
-            {/* View a post */}
             <Route path="/posts/:id" element={<PostDetails />} />
 
-            {/* Edit a post */}
             <Route
               path="/posts/:id/edit"
               element={

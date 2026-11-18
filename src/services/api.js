@@ -69,14 +69,14 @@ async function refreshAccessToken() {
     return data.accessToken;
 }
 
+
 export async function request(endpoint, options = {}, retry = true) {
     const publicEndpoint = isPublicEndpoint(endpoint);
-
     const token = localStorage.getItem("token");
 
     const headers = {
-        "Content-Type": "application/json",
         ...options.headers,
+        "Content-Type": "application/json",
     };
 
     if (!publicEndpoint && token) {
@@ -91,25 +91,11 @@ export async function request(endpoint, options = {}, retry = true) {
         credentials: "include",
     });
 
-    if (
-        response.status === 401 &&
-        retry &&
-        !publicEndpoint
-    ) {
+    if (response.status === 401 && retry && !publicEndpoint) {
         try {
-            const newToken = await refreshAccessToken();
+            await refreshAccessToken();
 
-            return request(
-                endpoint,
-                {
-                    ...options,
-                    headers: {
-                        ...options.headers,
-                        Authorization: `Bearer ${newToken}`,
-                    },
-                },
-                false
-            );
+            return request(endpoint, options, false);
         } catch (error) {
             localStorage.removeItem("token");
             throw error;
@@ -131,6 +117,7 @@ export async function request(endpoint, options = {}, retry = true) {
 
     return data;
 }
+
 
 // Authentication API
 

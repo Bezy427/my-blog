@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { deletePost } from "../services/api";
+import { getPost, deletePost } from "../services/api";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ErrorMessage from "../components/ErrorMessage";
@@ -35,11 +35,15 @@ export default function PostDetails() {
     async function loadPost() {
         setLoading(true);
         setError("");
-        
+
         try {
-            const data = await response.json();
+            const data = await getPost(id);
+
+            console.log("Post returned by API:", data);
+            console.log("Post ID returned by API:", data.id);
+            
             setPost(data);
-        } catch(error) {
+        } catch (error) {
             setError(error.message);
         } finally {
             setLoading(false);

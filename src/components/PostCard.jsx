@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import Posts from "../pages/Posts";
 
 export default function PostCard({ post }) {
     return (
@@ -15,9 +14,9 @@ export default function PostCard({ post }) {
             <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-sm text-gray-500">
                     By {post.author}
-                </span>  
+                </span>
 
-                <Link 
+                <Link
                     to={`/posts/${post.id}`}
                     className="w-full rounded-lg bg-black px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-800 sm:w-auto"
                 >
