@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Home from './pages/Home';
 import About from './pages/About';
 import PostDetails from './pages/PostDetails';
+import CreatePost from './pages/CreatePost';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
