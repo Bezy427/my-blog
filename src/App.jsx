@@ -10,6 +10,7 @@ import EditPost from './pages/EditPost';
 import Home from './pages/Home';
 import About from './pages/About';
 import PostDetails from './pages/PostDetails';
+import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Register from './pages/Register';
@@ -28,6 +29,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/about" element={<About />} />
+                        <Route path="/contact" element={<Contact />} />
                         <Route path="/posts" element={<Posts />} />
 
                         <Route

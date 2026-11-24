@@ -166,6 +166,14 @@ export default function Navbar() {
                         >
                             About
                         </NavLink>
+                        
+                        <NavLink
+                            to="/contact"
+                            onClick={closeMenu}
+                            className={navLinkClass}
+                        >
+                            Contact
+                        </NavLink>
 
                         {loading ? (
                             <p className="text-sm text-slate-400">
